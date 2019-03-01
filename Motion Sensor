@@ -3,7 +3,7 @@ import time
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 
-scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
+scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']      #grabs login authorizations for google account
 credentials = ServiceAccountCredentials.from_json_keyfile_name('motion.json', scope)
 gc = gspread.authorize(credentials)
 
@@ -11,31 +11,31 @@ wks = gc.open('Motion Sensor Data').sheet1
 
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BOARD)
-GPIO.setup(11,GPIO.IN)
-GPIO.setup(15,GPIO.OUT)
-GPIO.setup(13,GPIO.OUT)
-GPIO.setup(7,GPIO.OUT)
+GPIO.setup(11,GPIO.IN)                  #initialize LED1
+GPIO.setup(15,GPIO.OUT)			#initialize LED2
+GPIO.setup(13,GPIO.OUT)			#initialize LED3
+GPIO.setup(7,GPIO.OUT)			#initialize Motion Sensor
 
-count = 0
+countcount = 0                          #event counter
 
 while True:
         i = GPIO.input(11)
-        if i == 0:
+        if i == 0:                              #turns off all LEDs and tells the program that there is no activity
             print ("no intruders", i)
-            GPIO.output(7,0)
-            GPIO.output(15,0)
-            GPIO.output(13,0)
+            GPIO.output(7,0)			#led 1 off
+            GPIO.output(15,0)			#led 2 off
+            GPIO.output(13,0)			#led 3 off
             time.sleep(1)
         elif i == 1:
             count += 1
             print ("motion detected", i)
             wks.append_row([count, time.strftime("%D") , time.strftime("%H:%M:%S")])
-            GPIO.output(7,1)
+            GPIO.output(7,1)			#led 1 on
             time.sleep(2)
-            GPIO.output(13,1)
+            GPIO.output(13,1)			#led 2 on
             time.sleep(2)
-            GPIO.output(15,1)
+            GPIO.output(15,1)			#led 3 on
             time.sleep(4)
-            GPIO.output(7,0)
+            GPIO.output(7,0)			#resets LEDs
             GPIO.output(15,0)
             GPIO.output(13,0)
