@@ -1,0 +1,257 @@
+#include<Servo.h>
+//CONSTANTS
+const int buttonPin = 2;
+const int buttonPin2 = 3;
+int gledPin = 6;
+int yledPin = 7;
+int rledPin = 8; //choose the pin for the LED
+int inputPin = 4; //choose the input pin(for PIRsensor)
+int pirState = LOW; //we start, assuming no motion detected
+int val = 0;//variable for reading the pin status
+
+Servo myservo1;//left flap
+Servo myservo2;//right flap
+Servo myservo3;//center flap
+Servo myservo4;//bottom flap
+Servo myservo5;//top flap
+
+int buttonState = 0; //variable for reading the push button status
+int buttonState2 = 0;
+int pos = 0; //variable to store the servo position
+int pos2 = 180;
+int state = 0;
+
+void setup() {
+  //POWERBUTTON
+  pinMode(buttonPin, INPUT);
+  pinMode(buttonPin2, INPUT);
+  pinMode(gledPin, OUTPUT);
+  pinMode(yledPin, OUTPUT);
+  pinMode(rledPin, OUTPUT); //declare LED as output
+  pinMode(inputPin, INPUT); //declare sensor as input
+
+  //initialize the serial port:
+  Serial.begin(9600);
+
+  //SERVO
+  myservo1.attach(9);//attaches the servo on pin 9 to the servo object
+  myservo2.attach(10);//attaches the servo on pin 10 to the servo object
+  myservo3.attach(11);//attaches the servo on pin 11 to the servo object
+  myservo4.attach(12);//attaches the servo on pin 12 to the servo object
+  myservo5.attach(13);//attaches the servo on pin 13 to the servo object
+}
+
+void loop() {
+  //read the state of the push button value:
+  buttonState = digitalRead(buttonPin);
+  buttonState2 = digitalRead(buttonPin2);
+
+  if (buttonState == HIGH && buttonState2 == LOW)
+    state = 1; //runstate
+  else
+    state = 0; //idlestate
+
+
+  switch (state) {
+    case 0://idle
+      digitalWrite(gledPin, HIGH);
+      digitalWrite(yledPin, LOW);
+      digitalWrite(rledPin, LOW);
+      myservo1.write(0);
+      myservo2.write(0);
+      myservo3.write(180);
+      myservo4.write(0);
+      myservo5.write(0);
+      Serial.println("idle");
+      break;
+
+    case 1://run
+      Serial.println("run");
+      while (buttonState2 == LOW) {
+        //LEFT
+        digitalWrite(gledPin, LOW);
+        digitalWrite(yledPin, HIGH);
+        val = digitalRead(inputPin); //read input value
+        for (pos = 0; pos <= 180; pos += 1) { //goes from 0 degrees to 180 degrees
+          //in steps of 1 degree
+          myservo1.write(pos);//tell servo to go to position in variable'pos'
+          delay(5);//waits 5ms for the servo to reach the position
+        }
+        for (pos = 180; pos >= 0; pos -= 1) { //goes from 180 degrees to 0 degrees
+          myservo1.write(pos);//tell servo to go to position in variable'pos'
+          delay(5);//waits 5ms for the servo to reach the position
+        }
+        delay(150);
+        val = digitalRead(inputPin); //read input value
+        if (val == HIGH) { //check if the input is HIGH
+          digitalWrite(rledPin, HIGH);
+          digitalWrite(yledPin, LOW); //turn LED ON
+          if (pirState == LOW) {
+            //we have just turned on
+            Serial.println("Motiondetected!");
+            //We only want to print on the output change, not state
+            pirState = HIGH;
+            break;
+          }
+        }
+        buttonState2 = digitalRead(buttonPin2);
+        if (buttonState2 == HIGH) {
+          Serial.println("break");
+          delay(100);
+          break;
+        }
+        Serial.println("run");
+        //RIGHT
+        for (pos = 0; pos <= 180; pos += 1) { //goes from 0 degrees to 180 degrees
+          //instepsof1degree
+          myservo2.write(pos);//tell servo to go to position in variable'pos'
+          delay(5);//waits 5ms for the servo to reach the position
+        }
+        for (pos = 180; pos >= 0; pos -= 1) { //goes from 180 degrees to 0 degrees
+          myservo2.write(pos);//tell servo to go to position in variable'pos'
+          delay(5);//waits 5ms for the servo to reach the position
+        }
+        delay(150);
+        val = digitalRead(inputPin); //read input value
+        if (val == HIGH) { //check if the input is HIGH
+          digitalWrite(rledPin, HIGH);
+          digitalWrite(yledPin, LOW); //turn LED ON
+          if (pirState == LOW) {
+            //we have just turned on
+            Serial.println("Motiondetected!");
+            //We only want to print on the output change,not state
+            pirState = HIGH;
+            break;
+          }
+        }
+        buttonState2 = digitalRead(buttonPin2);
+        if (buttonState2 == HIGH) {
+          Serial.println("break");
+          delay(100);
+          break;
+        }
+        Serial.println("run");
+        //LEFT
+        for (pos = 0; pos <= 180; pos += 1) { //goes from 0 degrees to 180 degrees
+          //instepsof1degree
+          myservo1.write(pos);//tell servo to go to position in variable'pos'
+          delay(5);//waits 5ms for the servo to reach the position
+        }
+        for (pos = 180; pos >= 0; pos -= 1) { //goes from 180 degrees to 0 degrees
+          myservo1.write(pos);//tell servo to go to position in variable'pos'
+          delay(5);//waits 5ms for the servo to reach the position
+        }
+        delay(150);
+        val = digitalRead(inputPin); //read input value
+        if (val == HIGH) { //check if the input is HIGH
+          digitalWrite(rledPin, HIGH);
+          digitalWrite(yledPin, LOW); //turn LED ON
+          if (pirState == LOW) {
+            //we have just turned on
+            Serial.println("Motiondetected!");
+            //We only want to print on the output change,not state
+            pirState = HIGH;
+            break;
+          }
+        }
+        buttonState2 = digitalRead(buttonPin2);
+        if (buttonState2 == HIGH) {
+          Serial.println("break");
+          delay(100);
+          break;
+        }
+        Serial.println("run");
+        //BOTTOM
+        for (pos = 0; pos <= 180; pos += 1) { //goes from 0 degrees to 180 degrees
+          //instepsof1degree
+          myservo4.write(pos);//tell servo to go to position in variable'pos'
+          delay(5);//waits 5ms for the servo to reach the position
+        }
+        for (pos = 180; pos >= 0; pos -= 1) { //goes from 180 degrees to 0 degrees
+          myservo4.write(pos);//tell servo to go to position in variable'pos'
+          delay(5);//waits 5ms for the servo to reach the position
+        }
+        delay(150);
+        val = digitalRead(inputPin); //read input value
+        if (val == HIGH) { //check if the input is HIGH
+          digitalWrite(rledPin, HIGH);
+          digitalWrite(yledPin, LOW); //turn LED ON
+          if (pirState == LOW) {
+            //we have just turned on
+            Serial.println("Motiondetected!");
+            //We only want to print on the output change,not state
+            pirState = HIGH;
+            break;
+          }
+        }
+        buttonState2 = digitalRead(buttonPin2);
+        if (buttonState2 == HIGH) {
+          Serial.println("break");
+          delay(100);
+          break;
+        }
+        Serial.println("run");
+        //TOP
+        for (pos = 0; pos <= 180; pos += 1) { //goes from 0 degrees to 180 degrees
+          //instepsof1degree
+          myservo5.write(pos);//tell servo to go to position in variable'pos'
+          delay(5);//waits 5ms for the servo to reach the position
+        }
+        for (pos = 180; pos >= 0; pos -= 1) { //goes from 180 degrees to 0 degrees
+          myservo5.write(pos);//tell servo to go to position in variable'pos'
+          delay(5);//waits 5ms for the servo to reach the position
+        }
+        delay(150);
+        val = digitalRead(inputPin); //read input value
+        if (val == HIGH) { //check if the input is HIGH
+          digitalWrite(rledPin, HIGH);
+          digitalWrite(yledPin, LOW); //turn LED ON
+          if (pirState == LOW) {
+            //we have just turned on
+            Serial.println("Motiondetected!");
+            //We only want to print on the output change,not state
+            pirState = HIGH;
+            break;
+          }
+        }
+        buttonState2 = digitalRead(buttonPin2);
+        if (buttonState2 == HIGH) {
+          Serial.println("break");
+          delay(100);
+          break;
+        }
+        Serial.println("run");
+        //CENTER
+        for (pos2 = 180; pos2 >= 0; pos2 -= 1) { //goes from 180 degrees to 0 degrees
+          //insteps of 1 degree
+          myservo3.write(pos2);//tell servo to go to position in variable'pos'
+          delay(5);//waits 5ms for the servo to reach the position
+        }
+        for (pos2 = 0; pos2 <= 180; pos2 += 1) { //goes from 0 degrees to 180 degrees
+          myservo3.write(pos2);//tell servo to go to position in variable'pos'
+          delay(5);//waits 5ms for the servo to reach the position
+        }
+        val = digitalRead(inputPin); //read input value
+        if (val == HIGH) { //check if the input is HIGH
+          digitalWrite(rledPin, HIGH);
+          digitalWrite(yledPin, LOW); //turn LED ON
+          if (pirState == LOW) {
+            //we have just turned on
+            Serial.println("Motiondetected!");
+            //We only want to print on the output change,not state
+            pirState = HIGH;
+            break;
+          }
+        }
+        buttonState2 = digitalRead(buttonPin2);
+        if (buttonState2 == HIGH) {
+          Serial.println("break");
+          delay(100);
+          break;
+        }
+        Serial.println("run");
+        break;
+      }
+  }
+}
+
